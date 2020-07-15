@@ -1,0 +1,81 @@
+run:
+  timeout: 1m
+  issues-exit-code: 1
+  tests: true
+
+  # Skip vendor, third_party, testdata, examples, Godeps, builtin
+  skip-dirs-use-default: true
+  modules-download-mode: vendor
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+
+linters-settings:
+  dogsled:
+    max-blank-identifiers: 2
+  dupl:
+    threshold: 150
+  errcheck:
+    check-type-assertions: true
+    check-blank: false
+  exhaustive:
+    default-signifies-exhaustive: false
+  funlen:
+    lines: 60
+    statements: 40
+  gocognit:
+    min-complexity: 10
+  nestif:
+    min-complexity: 4
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  gocyclo:
+    min-complexity: 10
+  godot:
+    check-all: false
+  gofmt:
+    simplify: true
+  golint:
+    min-confidence: 0.8
+  gomnd:
+    settings:
+      mnd:
+        checks: argument,case,condition,operation,return,assign
+  govet:
+    check-shadowing: true
+    enable-all: false
+    enable:
+      - bools
+      - assign
+      - buildtag
+      - composites
+      - copylock
+      - lostcancel
+      - nilfunc
+      - printf
+      - structtag
+      - tests
+      - unmarshal
+      - unreachable
+  nakedret:
+    max-func-lines: 30
+  wsl:
+    strict-append: true
+    allow-assign-and-call: true
+    allow-multiline-assign: true
+    allow-cuddle-declarations: false
+    allow-trailing-comment: false
+    force-case-trailing-whitespace: 0
+    force-err-cuddling: false
+    allow-separated-leading-comment: false
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+severity:
+  default-severity: error
