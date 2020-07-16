@@ -60,10 +60,12 @@ $(foreach goarch,$(XC_ARCH),$(foreach goos,$(XC_OS),$(eval $(call xc-target,$(go
 
 _compress:
 	@echo "--> Compressing artifacts"
-	@for each in bin/*; do \
-       zip "$${each}.zip" "$${each}" &>/dev/null; \
-       rm -f "$${each}"; \
-    done
+	@cd bin/ && \
+		for each in *; do \
+          mv "$${each}" "corn"; \
+          zip "$${each}.zip" "corn" &>/dev/null; \
+          rm -f "corn"; \
+        done
 
 .PHONY: _compress
 
@@ -103,4 +105,4 @@ endif
 .PHONY: _sign
 
 clean:
-	@rm -f bin/*
+	@-rm -f bin/*
