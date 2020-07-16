@@ -58,7 +58,7 @@ func (engine *Engine) handleInstruction(ctx context.Context, inst Instruction) {
 		WithField("command", inst.Command).
 		WithField("args", inst.Args)
 
-	next := nextExec.Sub(time.Now())
+	next := time.Until(nextExec)
 	ticker := time.NewTimer(next)
 
 	threadLog.WithField("next_execution", nextExec).
@@ -71,7 +71,7 @@ func (engine *Engine) handleInstruction(ctx context.Context, inst Instruction) {
 			threadLog.Info("executor context is done")
 		case <-ticker.C:
 			nextExec = inst.Expr.Next(time.Now())
-			next = nextExec.Sub(time.Now())
+			next = time.Until(nextExec)
 			ticker.Reset(next)
 
 			// TODO: make deadline tolerance configurable or
@@ -82,7 +82,7 @@ func (engine *Engine) handleInstruction(ctx context.Context, inst Instruction) {
 			deadline := (next * 80) / 100
 
 			threadLog.WithField("deadline", deadline).Info("starting cron execution")
-			cmdCtx, _ := context.WithTimeout(ctx, deadline)
+			cmdCtx, cancel := context.WithTimeout(ctx, deadline)
 
 			cmd := exec.CommandContext(cmdCtx, inst.Command, inst.Args...)
 			cmd.Stdout = threadLog.Writer()
@@ -92,6 +92,8 @@ func (engine *Engine) handleInstruction(ctx context.Context, inst Instruction) {
 			if err != nil {
 				threadLog.WithError(err).Error("cron execution failed")
 			}
+
+			cancel()
 
 			threadLog.WithField("next_execution", nextExec).
 				WithField("next_exec_remaining", next.String()).
